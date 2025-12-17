@@ -1,0 +1,15 @@
+version: 2
+
+sources:
+  - name: raw_insurance
+    database: insurance_claims
+    schema: raw
+    tables:
+      - name: members_raw
+        description: "Raw JSON member data"
+      - name: policies_raw
+        description: "Raw JSON policy data"
+      - name: providers_raw
+        description: "Raw JSON provider data"
+      - name: claims_raw
+        description: "Raw JSON claim data"

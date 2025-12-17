@@ -1,0 +1,13 @@
+version: 2
+
+models:
+  - name: staging_claim
+    description: "Bronze staging model for claims JSON data"
+    columns:
+      - name: claim_id
+        tests:
+          - not_null
+
+  - name: staging_member
+  - name: staging_provider
+  - name: staging_policy
