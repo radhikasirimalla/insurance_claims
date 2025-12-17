@@ -32,5 +32,17 @@ clean-targets:         # directories to be removed by `dbt clean`
 models:
   insurance_claims:
     # Config indicated by + and applies to all files under models/example/
-    example:
+    bronze:
+      +schema: bronze
       +materialized: view
+      +tags: ['bronze']
+
+    silver:
+      +schema: silver
+      +materialized: table
+      +tags: ['silver'] 
+
+    gold:
+      +schema: gold
+      +materialized: table
+      +tags: ['gold']
