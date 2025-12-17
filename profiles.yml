@@ -1,0 +1,12 @@
+insurance_claims:
+  target: dev_insurance_claims
+  outputs:
+    dev_insurance_claims:
+      type: snowflake
+      account: "{{env_var('SF_ACCOUNT')}}"
+      user: "{{env_var('SF_USER')}}"
+      password: "{{env_var('SF_PASSWORD')}}"
+      role: accountadmin
+      warehouse: compute_wh
+      database: insurance_claims
+      schema: insurance
