@@ -1,7 +1,16 @@
-{% macro flatten_json_array(column_name) %}
-    JSON_EXTRACT_ARRAY({{ column_name }}) AS {{ column_name }}_array
+{% macro flatten_json_array(source_table, column_name='DATA') %}
+
+-- Macro to flatten top-level JSON arrays (or handle single objects)
+-- source_table : the raw source table (e.g., raw_insurance.claims_raw)
+-- column_name  : name of the JSON column (default 'DATA')
+
+SELECT
+    VALUE AS flattened_record,
+    INGEST_TS,
+    FILE_NAME,
+    FILE_ROW_NUMBER
+FROM {{ source_table }},
+LATERAL FLATTEN(input => {{ column_name }})
+
 {% endmacro %}
 
-{% macro extract_json_field(column_name, field_name, default_value='') %}
-    JSON_EXTRACT_SCALAR({{ column_name }}, '$.{{ field_name }}') AS {{ field_name }}
-{% endmacro %}
