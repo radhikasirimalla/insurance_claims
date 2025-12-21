@@ -1,0 +1,43 @@
+{{ config(
+    materialized = 'table',
+    schema = 'silver'
+) }}
+
+WITH base AS (
+    SELECT
+        provider_id,
+        provider_name,
+        provider_type,
+        specialty,
+        address,
+        city,
+        state,
+        zip_code,
+        accreditation_score,
+        fraud_risk_score,
+        source_ingestion_ts,
+        bronze_processed_at
+    FROM {{ ref('staging_provider') }}
+)
+
+SELECT
+    provider_id,
+    provider_name,
+    provider_type,
+    specialty,
+    address,
+    city,
+    state,
+    zip_code,
+    accreditation_score,
+    fraud_risk_score,
+
+    source_ingestion_ts,
+    bronze_processed_at,
+    CURRENT_TIMESTAMP() AS silver_processed_at
+
+FROM base
+QUALIFY ROW_NUMBER() OVER (
+    PARTITION BY provider_id
+    ORDER BY source_ingestion_ts DESC
+) = 1

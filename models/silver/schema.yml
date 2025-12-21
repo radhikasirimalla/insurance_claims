@@ -1,0 +1,80 @@
+version: 2
+
+models:
+
+  - name: dim_member
+    columns:
+      - name: member_id
+        tests:
+          - not_null
+          - unique
+
+  - name: dim_policy
+    columns:
+      - name: policy_number
+        tests:
+          - not_null
+          - unique
+      - name: member_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_member')
+              field: member_id
+
+  - name: dim_provider
+    columns:
+      - name: provider_id
+        tests:
+          - not_null
+          - unique
+
+  - name: fact_claims
+    columns:
+      - name: claim_id
+        tests:
+          - not_null
+          - unique
+      - name: member_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_member')
+              field: member_id
+      - name: policy_number
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_policy')
+              field: policy_number
+      - name: provider_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_provider')
+              field: provider_id
+
+  - name: fact_claims_final
+    columns:
+      - name: claim_id
+        tests:
+          - not_null
+          - unique
+      - name: member_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_member')
+              field: member_id
+      - name: policy_number
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_policy')
+              field: policy_number
+      - name: provider_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_provider')
+              field: provider_id
