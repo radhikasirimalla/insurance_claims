@@ -1,0 +1,24 @@
+version: 2
+
+models:
+  - name: mart_insurance_summary
+    description: "Monthly insurance claims KPIs"
+    columns:
+      - name: claim_month
+        description: "Month of claim"
+        tests:
+          - not_null
+
+  - name: mart_member_risk
+    description: "Member-level risk and claims aggregation"
+    columns:
+      - name: member_id
+        tests:
+          - not_null
+
+  - name: mart_provider_performance
+    description: "Provider performance and fraud risk metrics"
+    columns:
+      - name: provider_id
+        tests:
+          - not_null
