@@ -4,9 +4,9 @@
 ) }}
 
 SELECT
-    member_id,
-    member_name,
-    member_gender,
+    claim_id,
+    full_name,
+    gender,
     member_risk_score,
 
     COUNT(DISTINCT claim_id) AS total_claims,
@@ -21,7 +21,7 @@ SELECT
 
 FROM {{ ref('fact_claims_final') }}
 GROUP BY
-    member_id,
-    member_name,
-    member_gender,
+    claim_id,
+    full_name,
+    gender,
     member_risk_score
