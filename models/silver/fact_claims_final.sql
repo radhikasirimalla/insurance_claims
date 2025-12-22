@@ -1,8 +1,10 @@
 {{ config(
-    materialized = 'table',
+    materialized = 'incremental',
     schema = 'silver',
+    unique_key = 'claim_id',
     cluster_by = ['claim_date', 'member_id', 'provider_id', 'claim_status']
 ) }}
+
 
 WITH base_claims AS (
 
@@ -58,6 +60,11 @@ WITH base_claims AS (
     LEFT JOIN {{ ref('dim_member') }}   m ON c.member_id     = m.member_id
     LEFT JOIN {{ ref('dim_policy') }}   p ON c.policy_number = p.policy_number
     LEFT JOIN {{ ref('dim_provider') }} pr ON c.provider_id  = pr.provider_id
+
+    {% if is_incremental() %}
+WHERE c.source_ingestion_ts >
+      (SELECT COALESCE(MAX(source_ingestion_ts), '1900-01-01') FROM {{ this }})
+{% endif %}
 ),
 
 enriched_claims AS (

@@ -1,6 +1,7 @@
 {{ config(
-    materialized = 'table',
-    schema = 'silver'
+    materialized = 'incremental',
+    schema = 'silver',
+    unique_key = 'member_id'
 ) }}
 
 WITH base AS (
@@ -21,6 +22,11 @@ WITH base AS (
         source_ingestion_ts,
         bronze_processed_at
     FROM {{ ref('staging_member') }}
+
+    {% if is_incremental() %}
+    WHERE source_ingestion_ts >
+          (SELECT COALESCE(MAX(source_ingestion_ts), '1900-01-01') FROM {{ this }})
+    {% endif %}
 )
 
 SELECT

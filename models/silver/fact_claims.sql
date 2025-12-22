@@ -1,6 +1,7 @@
 {{ config(
-    materialized = 'table',
-    schema = 'silver'
+    materialized = 'incremental',
+    schema = 'silver',
+    unique_key = 'claim_id'
 ) }}
 
 SELECT
@@ -14,7 +15,7 @@ SELECT
     received_date,
     total_charges,
 
-    -- KEEP ARRAYS AS-IS
+    -- Keep arrays as-is
     diagnosis_codes,
     procedure_codes,
 
@@ -23,3 +24,8 @@ SELECT
     CURRENT_TIMESTAMP() AS silver_processed_at
 
 FROM {{ ref('staging_claim') }}
+
+{% if is_incremental() %}
+WHERE source_ingestion_ts >
+      (SELECT COALESCE(MAX(source_ingestion_ts), '1900-01-01') FROM {{ this }})
+{% endif %}

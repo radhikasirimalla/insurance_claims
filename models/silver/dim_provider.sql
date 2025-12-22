@@ -1,6 +1,8 @@
 {{ config(
-    materialized = 'table',
-    schema = 'silver'
+    materialized = 'incremental',
+    schema = 'silver',
+    unique_key = 'provider_id',
+    incremental_strategy = 'merge'
 ) }}
 
 WITH base AS (
@@ -18,6 +20,13 @@ WITH base AS (
         source_ingestion_ts,
         bronze_processed_at
     FROM {{ ref('staging_provider') }}
+
+    {% if is_incremental() %}
+      -- Only pull new or updated records
+      WHERE source_ingestion_ts >
+            (SELECT COALESCE(MAX(source_ingestion_ts), '1900-01-01')
+             FROM {{ this }})
+    {% endif %}
 )
 
 SELECT
