@@ -57,9 +57,21 @@ WITH base_claims AS (
         pr.fraud_risk_score
 
     FROM {{ ref('fact_claims') }} c
-    LEFT JOIN {{ ref('dim_member') }}   m ON c.member_id     = m.member_id
-    LEFT JOIN {{ ref('dim_policy') }}   p ON c.policy_number = p.policy_number
-    LEFT JOIN {{ ref('dim_provider') }} pr ON c.provider_id  = pr.provider_id
+    LEFT JOIN {{ ref('snap_dim_member') }} m
+  ON c.member_id = m.member_id
+ AND c.claim_date >= m.dbt_valid_from
+ AND c.claim_date < COALESCE(m.dbt_valid_to, '9999-12-31')
+
+LEFT JOIN {{ ref('snap_dim_policy') }} p
+  ON c.policy_number = p.policy_number
+ AND c.claim_date >= p.dbt_valid_from
+ AND c.claim_date < COALESCE(p.dbt_valid_to, '9999-12-31')
+
+LEFT JOIN {{ ref('snap_dim_provider') }} pr
+  ON c.provider_id = pr.provider_id
+ AND c.claim_date >= pr.dbt_valid_from
+ AND c.claim_date < COALESCE(pr.dbt_valid_to, '9999-12-31')
+
 
     {% if is_incremental() %}
 WHERE c.source_ingestion_ts >
